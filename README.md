@@ -5,11 +5,11 @@
 
 [![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
-[![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)](https://nginx.org/)
+[![GitHub_Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)](https://github.com/features/actions)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Nodemailer](https://img.shields.io/badge/Nodemailer-007ACC?style=for-the-badge&logo=mail.ru&logoColor=white)](https://nodemailer.com/)
-[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Tailwind_CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![GSAP](https://img.shields.io/badge/GSAP-88CE02?style=for-the-badge&logo=greensock&logoColor=white)](https://greensock.com/gsap/)
 
 <br />
@@ -17,7 +17,7 @@
 **Engenharia de precisão para megaestruturas, infraestrutura pesada e geometrias complexas.**  
 Soluções estruturais racionais com modelagem não-linear, simulação FEA acelerada por GPU e backend de mensagens com telemetria e envio de e-mails em tempo real.
 
-[Visão Geral](#visao-geral) • [Recursos Técnicos](#recursos-tecnicos--arquitetura) • [Serviço de E-mail](#servico-de-e-mail--api-backend) • [Instalação](#instalacao-e-execucao-local) • [Contato](#desenvolvedor)
+[Visão Geral](#visao-geral) • [Recursos Técnicos](#recursos-tecnicos--arquitetura) • [Docker & Nginx](#docker--nginx) • [CI/CD](#cicd--github-actions) • [Instalação](#instalacao-e-execucao-local) • [Contato](#desenvolvedor)
 
 </div>
 
@@ -53,16 +53,36 @@ O projeto combina uma estética editorial inspirada em estúdios internacionais 
 
 ---
 
-## Serviço de E-mail & API Backend
+## Docker & Nginx
 
-O backend Node.js e Express oferece um pipeline completo para recepção de leads e propostas técnicas:
+O projeto conta com conteinerização completa em múltiplos estágios (*Multi-Stage Builds*) para máxima performance e segurança em produção:
 
-- **Envio Duplo Transacional via Nodemailer:**
-  1. *Notificação Imediata para o Engenheiro:* Contendo nome, e-mail, telefone, serviço de interesse, mensagem, data/hora e IP.
-  2. *Confirmação Automática para o Cliente:* E-mail institucional de confirmação com link direto para o WhatsApp da equipe.
-- **Proteção Anti-Spam (Rate Limiting):** Proteção limitando envios excessivos por endereço de IP.
-- **Garantia de Zero Perda de Dados (Backup Local Automático):** Todo lead recebido é auditado e gravado como arquivo JSON em `backend/leads/`, garantindo que nenhuma mensagem seja perdida mesmo em oscilações do provedor SMTP.
-- **Suporte Multi-Provedor:** Compatível com Gmail App Passwords, Resend, SendGrid, Amazon SES, Mailgun ou qualquer servidor SMTP padrão.
+- **Frontend Container (Nginx Alpine):**
+  - Servidor web otimizado servindo os arquivos estáticos compilados da SPA.
+  - Compressão Gzip ativada para HTML, CSS, JavaScript e SVG.
+  - Headers de cache de longo prazo (`Cache-Control: immutable, max-age=31536000`) para bundles e frames WebP.
+  - Proxy reverso automático encaminhando requisições `/api/` para o container do backend.
+  - Cabeçalhos de segurança (*X-Frame-Options*, *X-Content-Type-Options*, *Referrer-Policy*).
+- **Backend Container (Node.js Alpine):**
+  - Ambiente de execução leve com usuário não-root (*strucxuser*).
+  - Volume persistente mapeado para `/app/leads` garantindo integridade dos dados.
+- **Orquestração com Docker Compose:**
+  - Inicialização conjunta de frontend e backend em rede isolada bridge.
+
+```bash
+# Inicializar todos os serviços em produção
+docker compose up -d --build
+```
+
+---
+
+## CI/CD · GitHub Actions
+
+O fluxo de integração e entrega contínua está configurado em `.github/workflows/ci-cd.yml`:
+
+1. **Validação do Frontend:** Checagem de tipagem TypeScript e compilação do bundle de produção com Vite.
+2. **Validação do Backend:** Checagem de tipagem e compilação do servidor TypeScript.
+3. **Build & Verificação Docker:** Construção automatizada das imagens de container para garantir integridade antes do deploy.
 
 ---
 
@@ -70,27 +90,33 @@ O backend Node.js e Express oferece um pipeline completo para recepção de lead
 
 ```text
 strucx/
+├── .github/
+│   └── workflows/
+│       └── ci-cd.yml           # Pipeline de CI/CD para GitHub Actions
 ├── frontend/
 │   ├── public/
 │   │   ├── frames/             # 1.155 quadros WebP da animação 3D
 │   │   ├── icons/              # Vetores SVG e ativos
+│   │   ├── videos/             # Clipes de simulação em alta resolução
 │   │   └── strucx-icon.svg     # Logotipo oficial
 │   ├── src/
-│   │   ├── components/         # Componentes React (Hero, Scroller 3D, Serviços Pinned, Layout, Navbar, Footer)
+│   │   ├── components/         # Componentes React (Hero, Scroller 3D, Serviços Pinned, Vídeo, Layout)
 │   │   ├── pages/              # Rotas da aplicação (Home, Soluções, Projetos, Tech, Sobre, Contato)
 │   │   └── index.css           # Configurações de tipografia e Tailwind CSS
-│   ├── package.json
-│   └── vite.config.ts          # Configuração Vite com proxy para /api
+│   ├── nginx.conf              # Configuração Nginx com Proxy /api e Caching
+│   ├── Dockerfile              # Multi-Stage Build do Frontend
+│   └── vite.config.ts          # Configuração Vite com proxy
 ├── backend/
 │   ├── src/
 │   │   ├── controllers/        # Controladores de rotas e validação de leads
-│   │   ├── routes/             # Definição de endpoints com Rate Limiting
+│   │   ├── routes/             # Endpoints com Rate Limiting
 │   │   ├── services/           # Serviço de e-mail (Nodemailer + Persistência)
-│   │   ├── templates/          # Templates responsivos HTML para admin e cliente
+│   │   ├── templates/          # Templates responsivos HTML
 │   │   └── server.ts           # Inicialização do servidor Express
+│   ├── Dockerfile              # Multi-Stage Build do Backend
 │   ├── leads/                  # Armazenamento auditado de leads em JSON
-│   ├── .env.example            # Variáveis de ambiente e SMTP
-│   └── package.json
+│   └── .env.example            # Variáveis de ambiente e SMTP
+├── docker-compose.yml          # Orquestração de containers para produção
 └── README.md                   # Documentação oficial
 ```
 
@@ -100,30 +126,35 @@ strucx/
 
 ### Pré-requisitos
 - Node.js
+- Docker e Docker Compose (para execução em container)
 - npm, pnpm ou yarn
 
-### 1. Clonar o Repositório
+### Execução via Docker Compose (Recomendado)
 ```bash
 git clone https://github.com/murilofsouzaa/strucx.git
 cd strucx
+docker compose up -d --build
 ```
+*Acesse em `http://localhost`.*
 
-### 2. Configurar e Executar o Backend
-```bash
-cd backend
-npm install
-cp .env.example .env
-npm run dev
-```
-*O servidor backend iniciará em `http://localhost:3001`.*
+### Execução Manual / Desenvolvimento
 
-### 3. Configurar e Executar o Frontend
-```bash
-cd ../frontend
-npm install
-npm run dev
-```
-*Acesse a aplicação em `http://localhost:5173`.*
+1. **Configurar e Executar o Backend:**
+   ```bash
+   cd backend
+   npm install
+   cp .env.example .env
+   npm run dev
+   ```
+   *Backend disponível em `http://localhost:3001`.*
+
+2. **Configurar e Executar o Frontend:**
+   ```bash
+   cd ../frontend
+   npm install
+   npm run dev
+   ```
+   *Frontend disponível em `http://localhost:5173`.*
 
 ---
 
