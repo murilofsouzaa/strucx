@@ -39,3 +39,4 @@ env/
 
 # Large Raw 4K Videos (>100MB)
 frontend/public/videos/*3840_2160*
+frontend/public/videos/*guidaste*

@@ -22,8 +22,9 @@ export function CinematicVideoSection() {
           playsInline
           className="absolute inset-0 w-full h-full object-cover scale-105 transform-gpu opacity-75"
         >
-          <source src="/videos/video2.mp4" type="video/mp4" />
-          <source src="/videos/video1.mp4" type="video/mp4" />
+          <source src="/videos/ponte.mp4" type="video/mp4" />
+          <source src="/videos/contrucao-barro-shopping.mp4" type="video/mp4" />
+          <source src="/videos/predio-fundo.mp4" type="video/mp4" />
         </video>
 
         {/* Cinematic Multi-Layer Gradient Overlays */}

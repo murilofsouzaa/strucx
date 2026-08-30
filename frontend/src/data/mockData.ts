@@ -169,10 +169,15 @@ export const PROJECTS_DATA: Project[] = [
     location: "São Paulo, SP",
     year: "2025",
     area: "84.000 m²",
-    status: "Concluído",
-    highlight: "Núcleo rígido em concreto fck 60 MPa com lajes nervuradas protendidas sem pilares internos.",
-    description: "Edifício icônico de 42 pavimentos com balanço estrutural de 18 metros sobre a praça cívica. O projeto empregou amortecedor de massa sintonizado (TMD) no topo para garantir conforto acústico e biomecânico sob rajadas de vento de até 140 km/h.",
-    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1200&auto=format&fit=crop",
+    status: "Em Execução",
+    highlight: "Fundações profundas em solo complexo com contenção perimetral e superestrutura em concreto protendido de 42 pavimentos.",
+    description: "Edifício icônico corporativo com escavação massiva em solo argiloso e contenções especiais. Superestrutura com núcleo rígido em concreto fck 60 MPa e lajes nervuradas protendidas sem pilares internos com balanço de 18 metros.",
+    image: "/videos/contrucao-predio.png",
+    video: "/videos/contrucao-barro-shopping.mp4",
+    videoClips: [
+      { title: "Terraplanagem, Escavação & Barro", src: "/videos/contrucao-barro-shopping.mp4", duration: "0:21" },
+      { title: "Ereção da Estrutura & Guindastes", src: "/videos/construcao-predio.mp4", duration: "0:14" }
+    ],
     specs: {
       system: "Núcleo de Concreto + Lajes Protendidas",
       steelWeight: "3.420 toneladas",
@@ -197,12 +202,12 @@ export const PROJECTS_DATA: Project[] = [
     area: "Extensão: 1.450 m",
     status: "Concluído",
     highlight: "Mastro único assimétrico em formato de diamante com 145 metros de altura e 48 pares de estais.",
-    description: "Desafio de engenharia marítima em solo marinho compressível. Desenvolvemos fundações com estacas escavadas com camisa metálica perdida de 2,4m de diâmetro e sistema de monitoramento dinâmico contínuo.",
-    image: "https://images.unsplash.com/photo-1545558014-8692077e9b5c?q=80&w=1200&auto=format&fit=crop",
-    video: "/videos/video2.mp4",
+    description: "Desafio de engenharia marítima em solo marinho compressível. Fundações com estacas escavadas com camisa metálica perdida de 2,4m de diâmetro, tabuleiro misto aço-concreto e vão central navegável de 380 metros.",
+    image: "/videos/ponte-thumbnail.png",
+    video: "/videos/ponte.mp4",
     videoClips: [
-      { title: "Simulação de Túnel de Vento CFD & Aerodinâmica", src: "/videos/video2.mp4", duration: "0:17" },
-      { title: "Detalhamento e Análise de Estais", src: "/videos/video1.mp4", duration: "0:14" }
+      { title: "Simulação de Túnel de Vento CFD & Aerodinâmica", src: "/videos/ponte.mp4", duration: "0:17" },
+      { title: "Canteiro de Obras & Montagem Náutica", src: "/videos/construcao-predio.mp4", duration: "0:14" }
     ],
     specs: {
       system: "Mastro Diamante em Concreto + Tabuleiro Misto Aço-Concreto",
@@ -220,16 +225,82 @@ export const PROJECTS_DATA: Project[] = [
   {
     id: "proj-3",
     slug: "nexus-logistics-mega-hub",
-    title: "Mega Hub Logístico Nexus 4.0",
+    title: "Centro Empresarial Skyline",
+    category: "Comercial",
+    client: "Brookfield Properties",
+    location: "São Paulo, SP",
+    year: "2024",
+    area: "62.000 m²",
+    status: "Concluído",
+    highlight: "Torre corporativa contemporânea com fachada cortina de vidro e núcleo estrutural esbelto.",
+    description: "Edifício comercial de 32 pavimentos com integração total à paisagem urbana. Dimensionamento estrutural focado em lajes planas protendidas, eliminando vigas intermediárias para flexibilidade arquitetônica.",
+    image: "/videos/predio-fundo-thumbnail.png",
+    video: "/videos/predio-fundo.mp4",
+    videoClips: [
+      { title: "Fachada Panorâmica & Volumetria", src: "/videos/predio-fundo.mp4", duration: "0:15" },
+      { title: "Montagem dos Pavimentos", src: "/videos/pessoas_construindo.mp4", duration: "0:36" }
+    ],
+    specs: {
+      system: "Núcleo Central em Concreto + Lajes Protendidas",
+      steelWeight: "2.150 toneladas",
+      concreteVolume: "16.400 m³",
+      maxSpan: "14.5 m entre pilares",
+      co2Savings: "580 ton CO2 eq"
+    },
+    features: [
+      "Fachada cortina de vidro com ancoragem antivibração",
+      "Lajes planas sem capitéis aparentes",
+      "Redução de 20% no consumo de concreto da superestrutura"
+    ]
+  },
+  {
+    id: "proj-4",
+    slug: "reserva-morumbi-sky-villas",
+    title: "Residencial Splendor Sky Villas",
+    category: "Residencial",
+    client: "JHSF Participações",
+    location: "Curitiba, PR",
+    year: "2025",
+    area: "48.000 m²",
+    status: "Concluído",
+    highlight: "Torre residencial de altíssimo padrão com acabamento arquitetônico premium e balanços esculturais.",
+    description: "Empreendimento residencial de luxo com lajes maciças protendidas e balanços arrojados. O projeto garantiu conforto biomecânico e atenuação acústica de alto nível entre os pavimentos.",
+    image: "/videos/predio-feito-bonito-thumbnail.png",
+    video: "/videos/predio-feito-bonito.mp4",
+    videoClips: [
+      { title: "Tour Arquitetônico & Fachada Concluída", src: "/videos/predio-feito-bonito.mp4", duration: "0:12" }
+    ],
+    specs: {
+      system: "Lajes Maciças Protendidas + Pilares Esbeltos",
+      steelWeight: "1.740 toneladas",
+      concreteVolume: "12.800 m³",
+      maxSpan: "7.2 m (balanços sociais)",
+      co2Savings: "310 ton CO2 eq"
+    },
+    features: [
+      "Atenuação acústica superior com lajes desacopladas",
+      "Balanços arquitetônicos com deformação controlada a laser",
+      "Fachada ventilada integrada à estrutura de suporte"
+    ]
+  },
+  {
+    id: "proj-5",
+    slug: "complexo-logistico-extrema",
+    title: "Complexo Logístico & Canteiro Integrado",
     category: "Industrial",
     client: "GLP Logística",
     location: "Extrema, MG",
     year: "2024",
     area: "140.000 m²",
-    status: "Concluído",
-    highlight: "Piso industrial de altíssima planicidade (FF/FL 65) para tráfego de AGVs autônomos e robôs de estocagem.",
-    description: "Estrutura pré-fabricada de concreto de montagem ultrarrápida (18.000 m²/mês) e cobertura metálica espacial com sheds para iluminação zenital natural.",
-    image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=1200&auto=format&fit=crop",
+    status: "Em Execução",
+    highlight: "Operação simultânea de guindastes pesados para montagem de estruturas pré-moldadas industriais.",
+    description: "Mega canteiro de obras com logística de içamento contínuo. Pré-fabricados de concreto de alta resistência para pisos industriais de grande capacidade e cobertura espacial metálica.",
+    image: "/videos/guindaste-thumbnail.png",
+    video: "/videos/pessoas_construindo.mp4",
+    videoClips: [
+      { title: "Içamento e Operação de Guindastes", src: "/videos/pessoas_construindo.mp4", duration: "0:36" },
+      { title: "Montagem da Superestrutura", src: "/videos/construcao-predio.mp4", duration: "0:14" }
+    ],
     specs: {
       system: "Pré-moldado de Concreto + Treliça Espacial Metálica",
       steelWeight: "1.850 toneladas",
@@ -244,81 +315,33 @@ export const PROJECTS_DATA: Project[] = [
     ]
   },
   {
-    id: "proj-4",
-    slug: "reserva-morumbi-sky-villas",
-    title: "Reserva dos Lagos - Sky Villas",
-    category: "Residencial",
-    client: "JHSF Participações",
-    location: "São Paulo, SP",
-    year: "2025",
-    area: "36.000 m²",
-    status: "Em Execução",
-    highlight: "Piscinas suspensas com borda infinita em balanço de 6 metros em todas as unidades.",
-    description: "Torre residencial de altíssimo luxo onde cada apartamento conta com piscina privativa em balanço estrutural. O projeto exigiu análise de vibrações de fundo e isolamento hidrostático com juntas elastoméricas especiais.",
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200&auto=format&fit=crop",
-    specs: {
-      system: "Vigas-Parede de Concreto Armado Protendido",
-      steelWeight: "1.620 toneladas",
-      concreteVolume: "11.200 m³",
-      maxSpan: "6.5 m (balanço de piscinas)",
-      co2Savings: "290 ton CO2 eq"
-    },
-    features: [
-      "Zero transmissão de ruídos de bombeamento entre lajes",
-      "Paredes de contenção com ancoragem ativa em rocha sã",
-      "Fachada com brises de concreto arquitetônico autolimpante"
-    ]
-  },
-  {
-    id: "proj-5",
-    slug: "retrofit-teatro-nacional",
-    title: "Retrofit & Ampliação do Teatro Centenário",
+    id: "proj-6",
+    slug: "retrofit-metropol",
+    title: "Retrofit & Ampliação Metropol",
     category: "Retrofit",
-    client: "Secretaria de Estado da Cultura",
+    client: "Secretaria de Obras Públicas",
     location: "Rio de Janeiro, RJ",
     year: "2023",
-    area: "18.500 m²",
+    area: "26.500 m²",
     status: "Concluído",
-    highlight: "Reforço de pilares centenários com polímeros de fibra de carbono (CFRP) sem alteração volumétrica.",
-    description: "Edificação histórica de 1912 adaptada para receber novas instalações de cenotecnia de 45 toneladas suspensas sobre a cúpula original. Criação de subsolo técnico sob fundações existentes com macaqueamento controlado.",
-    image: "https://images.unsplash.com/photo-1514306191717-452ec28c7814?q=80&w=1200&auto=format&fit=crop",
+    highlight: "Reforço de pilares e vigas com polímeros de fibra de carbono (CFRP) e macaqueamento controlado.",
+    description: "Intervenção estrutural em edifício histórico para modernização e aumento de capacidade de carga em 180%. Execução sem paralisação das atividades térreas e com monitoramento a laser.",
+    image: "/videos/contrucao-predio.png",
+    video: "/videos/construcao-predio.mp4",
+    videoClips: [
+      { title: "Detalhamento e Execução de Reforço", src: "/videos/construcao-predio.mp4", duration: "0:14" }
+    ],
     specs: {
       system: "Estrutura Mista Original + Reforço em Fibra de Carbono e Micropilares",
-      steelWeight: "480 toneladas",
-      concreteVolume: "3.200 m³",
-      maxSpan: "24.0 m (cúpula cênica)",
-      co2Savings: "840 ton CO2 eq"
+      steelWeight: "520 toneladas",
+      concreteVolume: "4.100 m³",
+      maxSpan: "16.0 m (reforço de lajes)",
+      co2Savings: "860 ton CO2 eq"
     },
     features: [
-      "Preservação integral da arquitetura neoclássica tombada",
+      "Preservação integral dos elementos arquitetônicos",
       "Monitoramento por inclinômetros a laser durante escavações",
-      "Aumento de 220% na capacidade de carga da caixa de palco"
-    ]
-  },
-  {
-    id: "proj-6",
-    slug: "complexo-metalurgico-votorantim",
-    title: "Complexo Siderúrgico & Silos Verticais",
-    category: "Industrial",
-    client: "Gerdau S.A.",
-    location: "Ouro Branco, MG",
-    year: "2024",
-    area: "92.000 m²",
-    status: "Concluído",
-    highlight: "Bateria de 8 silos cilíndricos em concreto protendido de 45 metros de altura para minério.",
-    description: "Projeto para condições severas de fadiga térmica, abrasão mecânica e vibração induzida por britadores primários. Cálculo estrutural não-linear considerando fluxo de granéis e pressões dinâmicas de Janssen.",
-    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=1200&auto=format&fit=crop",
-    specs: {
-      system: "Forma Deslizante em Concreto Protendido + Pórticos de Aço Pesado",
-      steelWeight: "5.600 toneladas",
-      concreteVolume: "34.000 m³",
-      maxSpan: "Silos Ø 16m x 45m",
-      co2Savings: "910 ton CO2 eq"
-    },
-    features: [
-      "Execução com formas deslizantes contínuas 24/7 em 14 dias",
-      "Concreto de alta durabilidade com sílica ativa e microssílica",
-      "Resistência a solicitações sísmicas e choque de carga"
+      "Aumento substancial na capacidade portante da superestrutura"
     ]
   }
 ];
