@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useInView } from 'framer-motion';
-import { ArrowRight, Cpu, Eye, ShieldCheck } from '@phosphor-icons/react';
+import { ArrowRight, Cpu, ShieldCheck } from '@phosphor-icons/react';
 
 export function CinematicVideoSection() {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -32,20 +32,7 @@ export function CinematicVideoSection() {
         <div className="absolute inset-0 bg-radial from-transparent via-[#0F172A]/30 to-[#0F172A]/80 pointer-events-none" />
 
         {/* Center Content Overlay */}
-        <div className="relative z-10 h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-between py-12 sm:py-16">
-          
-          {/* Top Header Tag */}
-          <div className="flex items-center justify-between">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-sky-500/10 border border-sky-400/30 backdrop-blur-md text-[11px] font-condensed uppercase tracking-widest text-sky-400 font-bold">
-              <Eye size={14} weight="bold" />
-              <span>Simulação & Modelagem Visual</span>
-            </div>
-
-            <div className="hidden sm:flex items-center gap-2 text-xs font-condensed uppercase tracking-wider text-slate-400">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>GPU Render Stream</span>
-            </div>
-          </div>
+        <div className="relative z-10 h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-between py-12 sm:py-16 gap-8">
 
           {/* Core Architectural Headline */}
           <motion.div 
