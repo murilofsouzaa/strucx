@@ -89,7 +89,7 @@ jobs:
           push: false
           tags: strucx-backend:latest
 
-  # 4. Automated CD Deployment to VPS (Native OpenSSH)
+  # 4. Automated CD Deployment to VPS (Native OpenSSH with Port Support)
   deploy:
     name: Deploy to Production VPS
     runs-on: ubuntu-latest
@@ -101,15 +101,15 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{ secrets.VPS_SSH_KEY }}
           HOST: ${{ secrets.VPS_HOST }}
-          USER: ${{ secrets.VPS_USER || 'root' }}
+          USER: ${{ secrets.VPS_USER }}
           PORT: ${{ secrets.VPS_PORT || '22' }}
         run: |
-          if [ -z "$SSH_PRIVATE_KEY" ] || [ -z "$HOST" ]; then
-            echo "❌ Erro: VPS_SSH_KEY ou VPS_HOST não configurados nas secrets do GitHub."
+          if [ -z "$SSH_PRIVATE_KEY" ] || [ -z "$HOST" ] || [ -z "$USER" ]; then
+            echo "❌ Erro: VPS_SSH_KEY, VPS_HOST ou VPS_USER não configurados nas secrets."
             exit 1
           fi
 
-          echo "🔐 Configurando autenticação SSH..."
+          echo "🔐 Configurando autenticação SSH na porta $PORT..."
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
 
@@ -117,11 +117,11 @@ jobs:
           printf "%s\n" "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
 
-          # Adiciona o host aos known_hosts
+          # Adiciona o host aos known_hosts na porta especificada
           ssh-keyscan -p "$PORT" -H "$HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
           chmod 644 ~/.ssh/known_hosts
 
-          echo "🚀 Conectando e executando deploy na VPS ($HOST)..."
+          echo "🚀 Conectando e executando deploy na VPS ($HOST:$PORT)..."
           ssh -o StrictHostKeyChecking=accept-new -i ~/.ssh/deploy_key -p "$PORT" "$USER@$HOST" << 'EOF'
             set -e
             echo "📍 Diretório atual:"
