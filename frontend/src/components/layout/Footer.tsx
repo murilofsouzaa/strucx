@@ -9,9 +9,9 @@ import {
 
 export function Footer() {
   return (
-    <footer className="bg-slate-50/80 backdrop-blur-xl border-t border-slate-200/80 relative z-20 overflow-hidden text-slate-600 shadow-2xs">
+    <footer className="bg-white/35 backdrop-blur-xl border-t border-white/40 relative z-20 overflow-hidden text-slate-600 shadow-[0_-4px_20px_-2px_rgba(0,0,0,0.04)]">
       {/* Top Accent Line */}
-      <div className="h-[1.5px] w-full bg-gradient-to-r from-transparent via-[#0284C7]/80 to-transparent" />
+      <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-[#0284C7]/60 to-transparent" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 mb-16">
