@@ -89,7 +89,7 @@ jobs:
           push: false
           tags: strucx-backend:latest
 
-  # 4. Automated CD Deployment to VPS
+  # 4. Automated CD Deployment to VPS (Native OpenSSH)
   deploy:
     name: Deploy to Production VPS
     runs-on: ubuntu-latest
@@ -97,17 +97,39 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
-      - name: Deploy via SSH to VPS
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER || 'root' }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          password: ${{ secrets.VPS_PASSWORD }}
-          port: ${{ secrets.VPS_PORT || 22 }}
-          script: |
-            echo "🚀 Iniciando deploy contínuo na VPS..."
+      - name: Deploy via Native SSH to VPS
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.VPS_SSH_KEY }}
+          HOST: ${{ secrets.VPS_HOST }}
+          USER: ${{ secrets.VPS_USER || 'root' }}
+          PORT: ${{ secrets.VPS_PORT || '22' }}
+        run: |
+          if [ -z "$SSH_PRIVATE_KEY" ] || [ -z "$HOST" ]; then
+            echo "❌ Erro: VPS_SSH_KEY ou VPS_HOST não configurados nas secrets do GitHub."
+            exit 1
+          fi
+
+          echo "🔐 Configurando autenticação SSH..."
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+          # Salva a chave privada e garante permissões 600
+          printf "%s\n" "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          # Adiciona o host aos known_hosts
+          ssh-keyscan -p "$PORT" -H "$HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+          chmod 644 ~/.ssh/known_hosts
+
+          echo "🚀 Conectando e executando deploy na VPS ($HOST)..."
+          ssh -o StrictHostKeyChecking=accept-new -i ~/.ssh/deploy_key -p "$PORT" "$USER@$HOST" << 'EOF'
+            set -e
+            echo "📍 Diretório atual:"
             cd ~/projects/strucx || cd /var/www/strucx || exit 1
+            pwd
+            echo "📥 Puxando alterações do repositório..."
             git pull origin main
+            echo "🐳 Subindo e recriando containers Docker..."
             docker compose up -d --build
-            echo "✅ Deploy finalizado com sucesso!"
+            echo "✅ Deploy finalizado com sucesso na VPS!"
+          EOF
