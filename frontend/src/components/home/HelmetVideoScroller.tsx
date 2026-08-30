@@ -5,52 +5,13 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 const TOTAL_FRAMES = 1155;
-// Limite estrito de memória: máx 16 frames na VRAM (~58MB Desktop 720p / ~18MB Mobile)
-const MAX_CACHE_SIZE = 16;
-// Âncoras globais para scroll rápido (apenas 24 frames distribuídos)
-const ANCHOR_STEP = 48;
+const PRIMARY_STEP = 2; // Carrega 1 a cada 2 frames na Fase 1 para fluidez absoluta (60fps contínuo)
+const BATCH_SIZE = 12;
 
 function getFramePath(index: number, isMobile: boolean): string {
   const padIndex = String(index + 1).padStart(4, '0');
   const baseDir = isMobile ? '/frames-mobile' : '/frames';
   return `${baseDir}/frame_${padIndex}.webp`;
-}
-
-// Busca e decodifica a imagem em thread secundária (Off-Thread) sem bloquear a UI
-async function fetchAndDecodeFrame(
-  index: number,
-  isMobile: boolean,
-  signal?: AbortSignal
-): Promise<ImageBitmap | HTMLImageElement> {
-  const url = getFramePath(index, isMobile);
-
-  if (typeof window !== 'undefined' && 'createImageBitmap' in window) {
-    const res = await fetch(url, { signal });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const blob = await res.blob();
-    return await createImageBitmap(blob);
-  }
-
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const handleAbort = () => {
-      img.src = '';
-      reject(new DOMException('Aborted', 'AbortError'));
-    };
-    if (signal) {
-      if (signal.aborted) return handleAbort();
-      signal.addEventListener('abort', handleAbort);
-    }
-    img.src = url;
-    img.onload = () => {
-      if (signal) signal.removeEventListener('abort', handleAbort);
-      resolve(img);
-    };
-    img.onerror = (err) => {
-      if (signal) signal.removeEventListener('abort', handleAbort);
-      reject(err);
-    };
-  });
 }
 
 export function HelmetVideoScroller() {
@@ -60,70 +21,54 @@ export function HelmetVideoScroller() {
   const targetFrameRef = useRef<number>(0);
   const lastRenderedFrameRef = useRef<number>(-1);
   const rafId = useRef<number | null>(null);
-
-  // Cache em memória estritamente limitado (máx 16 frames)
-  const imageCache = useRef<Map<number, ImageBitmap | HTMLImageElement>>(new Map());
-  const pendingFetches = useRef<Set<number>>(new Set());
-  const loadedIndices = useRef<number[]>([]);
-  const isMobileRef = useRef<boolean>(false);
   const isVisibleRef = useRef<boolean>(true);
 
-  // Busca o frame mais próximo já carregado no cache (Zero frames pretos/vazios)
-  const getNearestLoadedFrame = useCallback((target: number): number | null => {
-    const cache = imageCache.current;
-    if (cache.has(target)) return target;
+  // Array de referências de imagens pré-carregadas pelo browser
+  const imagesRef = useRef<(HTMLImageElement | null)[]>(new Array(TOTAL_FRAMES).fill(null));
 
-    const indices = loadedIndices.current;
-    if (indices.length === 0) return null;
+  // Busca o frame mais próximo já carregado na memória (busca local ultra-rápida sem delay)
+  const getNearestLoadedImage = useCallback((target: number): HTMLImageElement | null => {
+    const images = imagesRef.current;
+    const direct = images[target];
+    if (direct && direct.complete && direct.naturalWidth > 0) {
+      return direct;
+    }
 
-    // Busca binária pelo frame carregado mais próximo
-    let low = 0;
-    let high = indices.length - 1;
-    let best = indices[0];
-    let minDiff = Math.abs(best - target);
-
-    while (low <= high) {
-      const mid = (low + high) >> 1;
-      const val = indices[mid];
-      const diff = Math.abs(val - target);
-
-      if (diff < minDiff) {
-        minDiff = diff;
-        best = val;
+    // Procura o vizinho mais próximo (+1, -1, +2, -2...)
+    for (let offset = 1; offset < 30; offset++) {
+      const up = target + offset;
+      if (up < TOTAL_FRAMES) {
+        const imgUp = images[up];
+        if (imgUp && imgUp.complete && imgUp.naturalWidth > 0) return imgUp;
       }
-
-      if (val < target) {
-        low = mid + 1;
-      } else if (val > target) {
-        high = mid - 1;
-      } else {
-        return val;
+      const down = target - offset;
+      if (down >= 0) {
+        const imgDown = images[down];
+        if (imgDown && imgDown.complete && imgDown.naturalWidth > 0) return imgDown;
       }
     }
 
-    return best;
+    // Retorna o frame 0 como fallback de segurança
+    const first = images[0];
+    return first && first.complete ? first : null;
   }, []);
 
-  // Renderiza no Canvas 2D sem repaints redundantes
+  // Renderiza no Canvas 2D com alta performance e sem repaints redundantes
   const renderFrame = useCallback((frameIndex: number) => {
     if (!isVisibleRef.current) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const frameToUse = getNearestLoadedFrame(frameIndex);
-    if (frameToUse === null) return;
-    if (frameToUse === lastRenderedFrameRef.current) return;
-
-    const imageSource = imageCache.current.get(frameToUse);
-    if (!imageSource) return;
+    const img = getNearestLoadedImage(frameIndex);
+    if (!img) return;
 
     const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
     const canvasWidth = canvas.width;
     const canvasHeight = canvas.height;
-    const imgWidth = 'width' in imageSource ? imageSource.width : (imageSource as any).naturalWidth;
-    const imgHeight = 'height' in imageSource ? imageSource.height : (imageSource as any).naturalHeight;
+    const imgWidth = img.naturalWidth;
+    const imgHeight = img.naturalHeight;
 
     if (!imgWidth || !imgHeight) return;
 
@@ -150,11 +95,11 @@ export function HelmetVideoScroller() {
       offsetY = 0;
     }
 
-    ctx.drawImage(imageSource, offsetX, offsetY, drawWidth, drawHeight);
-    lastRenderedFrameRef.current = frameToUse;
-  }, [getNearestLoadedFrame]);
+    ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+    lastRenderedFrameRef.current = frameIndex;
+  }, [getNearestLoadedImage]);
 
-  // Loop contínuo com física de inércia elástica (LERP 0.075) e desacoplado do scroll
+  // Loop contínuo com física de inércia elástica LERP (0.085) para fluidez suave
   const updateLoop = useCallback(() => {
     if (!isVisibleRef.current) {
       rafId.current = null;
@@ -163,7 +108,7 @@ export function HelmetVideoScroller() {
 
     const diff = targetFrameRef.current - currentFrameRef.current;
     if (Math.abs(diff) > 0.0001) {
-      currentFrameRef.current += diff * 0.075;
+      currentFrameRef.current += diff * 0.085;
       const frameToRender = Math.min(
         TOTAL_FRAMES - 1,
         Math.max(0, Math.round(currentFrameRef.current))
@@ -179,18 +124,16 @@ export function HelmetVideoScroller() {
   }, [renderFrame]);
 
   useEffect(() => {
-    const abortController = new AbortController();
-    const { signal } = abortController;
+    let isCancelled = false;
 
     // 1. Detecção Inteligente de Resolução (Mobile vs Desktop)
     const isMobile = window.innerWidth <= 768 || (window.innerWidth <= 1024 && window.devicePixelRatio < 2);
-    isMobileRef.current = isMobile;
 
-    // 2. Redimensionamento otimizado (DPR calibrado em 1.25 para economizar buffer de GPU)
+    // 2. Redimensionamento adaptativo
     const handleResize = () => {
       const canvas = canvasRef.current;
       if (!canvas) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       canvas.width = Math.round(window.innerWidth * dpr);
       canvas.height = Math.round(window.innerHeight * dpr);
       lastRenderedFrameRef.current = -1;
@@ -204,113 +147,70 @@ export function HelmetVideoScroller() {
     handleResize();
     window.addEventListener('resize', handleResize, { passive: true });
 
-    // Função de inserção com política LRU rígida (Max 16 frames ativos na VRAM)
-    const insertInCache = (idx: number, bitmap: ImageBitmap | HTMLImageElement) => {
-      if (signal.aborted) {
-        if (bitmap && 'close' in bitmap && typeof (bitmap as any).close === 'function') {
-          (bitmap as any).close();
-        }
-        return;
-      }
-
-      imageCache.current.set(idx, bitmap);
-      pendingFetches.current.delete(idx);
-
-      const arr = loadedIndices.current;
-      let pos = 0;
-      while (pos < arr.length && arr[pos] < idx) pos++;
-      arr.splice(pos, 0, idx);
-
-      // Desalojamento imediato da VRAM para frames fora do raio ativo
-      while (imageCache.current.size > MAX_CACHE_SIZE) {
-        const target = targetFrameRef.current;
-        let furthestIdx = -1;
-        let maxDist = -1;
-
-        for (const key of imageCache.current.keys()) {
-          const dist = Math.abs(key - target);
-          if (dist > maxDist) {
-            maxDist = dist;
-            furthestIdx = key;
+    // Função de carregamento de imagem individual
+    const loadImage = (index: number): Promise<HTMLImageElement> => {
+      return new Promise((resolve, reject) => {
+        if (isCancelled) return reject();
+        const img = new Image();
+        img.src = getFramePath(index, isMobile);
+        img.onload = () => {
+          if (!isCancelled) {
+            imagesRef.current[index] = img;
+            resolve(img);
+          } else {
+            reject();
           }
-        }
-
-        if (furthestIdx !== -1) {
-          const item = imageCache.current.get(furthestIdx);
-          if (item && 'close' in item && typeof (item as any).close === 'function') {
-            (item as any).close(); // Libera buffer na GPU imediatamente
-          }
-          imageCache.current.delete(furthestIdx);
-
-          const idxInArr = loadedIndices.current.indexOf(furthestIdx);
-          if (idxInArr > -1) {
-            loadedIndices.current.splice(idxInArr, 1);
-          }
-        } else {
-          break;
-        }
-      }
+        };
+        img.onerror = () => reject();
+      });
     };
 
-    // Prefetch sob demanda em janela móvel ao redor do scroll [target - 4, target + 8]
-    const prefetchWindow = (centerFrame: number) => {
-      if (signal.aborted) return;
-      const rounded = Math.round(centerFrame);
-      const start = Math.max(0, rounded - 4);
-      const end = Math.min(TOTAL_FRAMES - 1, rounded + 8);
-
-      for (let i = start; i <= end; i++) {
-        if (!imageCache.current.has(i) && !pendingFetches.current.has(i)) {
-          pendingFetches.current.add(i);
-          fetchAndDecodeFrame(i, isMobile, signal)
-            .then((bm) => {
-              insertInCache(i, bm);
-              // Se o frame atual ainda não foi desenhado, acorda o render
-              const curr = Math.round(currentFrameRef.current);
-              if (Math.abs(curr - i) <= 1) {
-                renderFrame(curr);
-              }
-            })
-            .catch(() => {
-              pendingFetches.current.delete(i);
-            });
-        }
-      }
-    };
-
-    // 3. Carga Inicial Leve: Apenas Frame 0 + 24 Âncoras Globais (< 1MB RAM inicial)
-    const initLightweight = async () => {
+    // 3. Pré-carregamento Progressivo Otimizado para Fluidez Instantânea
+    const startPreload = async () => {
       try {
-        const first = await fetchAndDecodeFrame(0, isMobile, signal);
-        insertInCache(0, first);
-        renderFrame(0);
-
-        // Preenche a janela inicial
-        prefetchWindow(0);
-
-        // Âncoras distribuídas para scroll rápido
-        const anchors: number[] = [];
-        for (let i = ANCHOR_STEP; i < TOTAL_FRAMES; i += ANCHOR_STEP) {
-          anchors.push(i);
+        // Passo 1: Frame 0 Imediato
+        const first = await loadImage(0);
+        if (!isCancelled) {
+          imagesRef.current[0] = first;
+          renderFrame(0);
         }
 
-        for (const idx of anchors) {
-          if (signal.aborted) return;
-          try {
-            const bm = await fetchAndDecodeFrame(idx, isMobile, signal);
-            insertInCache(idx, bm);
-          } catch {
-            // Ignora cancelamentos
+        // Passo 2: Frames Principais (Passo 2: 0, 2, 4, 6... ~570 frames)
+        const primaryIndices: number[] = [];
+        for (let i = PRIMARY_STEP; i < TOTAL_FRAMES; i += PRIMARY_STEP) {
+          primaryIndices.push(i);
+        }
+
+        for (let i = 0; i < primaryIndices.length; i += BATCH_SIZE) {
+          if (isCancelled) return;
+          const chunk = primaryIndices.slice(i, i + BATCH_SIZE);
+          await Promise.allSettled(chunk.map((idx) => loadImage(idx)));
+          
+          // Re-renderiza para garantir nitidez se o usuário estiver parado
+          if (i === 0 && !isCancelled) {
+            renderFrame(Math.round(currentFrameRef.current));
           }
+        }
+
+        // Passo 3: Frames Intermediários Ímpares (1, 3, 5, 7...) em background
+        const secondaryIndices: number[] = [];
+        for (let i = 1; i < TOTAL_FRAMES; i += PRIMARY_STEP) {
+          secondaryIndices.push(i);
+        }
+
+        for (let i = 0; i < secondaryIndices.length; i += BATCH_SIZE) {
+          if (isCancelled) return;
+          const chunk = secondaryIndices.slice(i, i + BATCH_SIZE);
+          await Promise.allSettled(chunk.map((idx) => loadImage(idx)));
         }
       } catch {
-        // Ignora aborts
+        // Ignora erros de cancelamento
       }
     };
 
-    initLightweight();
+    startPreload();
 
-    // 4. GSAP ScrollTrigger com Prefetch sob Demanda
+    // 4. GSAP ScrollTrigger com transição fluida
     const ctx = gsap.context(() => {
       ScrollTrigger.create({
         trigger: document.documentElement,
@@ -324,22 +224,17 @@ export function HelmetVideoScroller() {
           }
           return `+=${window.innerHeight * 4.5}`;
         },
-        scrub: 1.0,
+        scrub: 0.9,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
-          const newTarget = self.progress * (TOTAL_FRAMES - 1);
-          targetFrameRef.current = newTarget;
-
-          // Dispara prefetch da janela sob demanda
-          prefetchWindow(newTarget);
-
+          targetFrameRef.current = self.progress * (TOTAL_FRAMES - 1);
           if (rafId.current === null && isVisibleRef.current) {
             rafId.current = requestAnimationFrame(updateLoop);
           }
         }
       });
 
-      // Fade out e pausa do canvas ao passar da seção de vídeo
+      // Fade out do canvas para branco puro ao alcançar a seção de vídeo
       if (wrapperRef.current) {
         gsap.to(wrapperRef.current, {
           opacity: 0,
@@ -360,9 +255,9 @@ export function HelmetVideoScroller() {
 
     rafId.current = requestAnimationFrame(updateLoop);
 
-    // 5. Limpeza Rigorosa de Memória e VRAM
+    // 5. Cleanup
     return () => {
-      abortController.abort();
+      isCancelled = true;
       window.removeEventListener('resize', handleResize);
       ctx.revert();
 
@@ -370,15 +265,15 @@ export function HelmetVideoScroller() {
         cancelAnimationFrame(rafId.current);
       }
 
-      // Libera explicitamente toda a VRAM fechando os ImageBitmaps
-      imageCache.current.forEach((item) => {
-        if (item && 'close' in item && typeof (item as any).close === 'function') {
-          (item as any).close();
+      // Cancela downloads pendentes
+      imagesRef.current.forEach((img) => {
+        if (img) {
+          img.onload = null;
+          img.onerror = null;
+          img.src = '';
         }
       });
-      imageCache.current.clear();
-      pendingFetches.current.clear();
-      loadedIndices.current = [];
+      imagesRef.current = new Array(TOTAL_FRAMES).fill(null);
     };
   }, [renderFrame, updateLoop]);
 
@@ -388,7 +283,7 @@ export function HelmetVideoScroller() {
       className="fixed inset-0 w-full h-full pointer-events-none -z-10 overflow-hidden bg-white will-change-transform"
       style={{ willChange: 'transform' }}
     >
-      {/* Canvas 2D de Alta Performance com Buffer Reduzido */}
+      {/* Canvas 2D Suave e de Alto Desempenho */}
       <canvas
         ref={canvasRef}
         className="w-full h-full block bg-transparent pointer-events-none"
