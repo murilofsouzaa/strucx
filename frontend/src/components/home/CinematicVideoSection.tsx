@@ -1,11 +1,22 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useInView } from 'framer-motion';
 import { ArrowRight, Cpu, ShieldCheck } from '@phosphor-icons/react';
 
 export function CinematicVideoSection() {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const isInView = useInView(containerRef, { once: false, amount: 0.3 });
+
+  useEffect(() => {
+    if (videoRef.current) {
+      if (isInView) {
+        videoRef.current.play().catch(() => {});
+      } else {
+        videoRef.current.pause();
+      }
+    }
+  }, [isInView]);
 
   return (
     <section 
@@ -16,15 +27,13 @@ export function CinematicVideoSection() {
       {/* Full-Width Background Video Player */}
       <div className="relative w-full h-[65vh] sm:h-[75vh] lg:h-[85vh] min-h-[480px] max-h-[900px] overflow-hidden">
         <video
-          autoPlay
+          ref={videoRef}
           loop
           muted
           playsInline
           className="absolute inset-0 w-full h-full object-cover scale-105 transform-gpu opacity-75"
         >
           <source src="/videos/ponte.mp4" type="video/mp4" />
-          <source src="/videos/contrucao-barro-shopping.mp4" type="video/mp4" />
-          <source src="/videos/predio-fundo.mp4" type="video/mp4" />
         </video>
 
         {/* Cinematic Multi-Layer Gradient Overlays */}

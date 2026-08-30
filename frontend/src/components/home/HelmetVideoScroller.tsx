@@ -31,9 +31,23 @@ async function fetchAndDecodeFrame(
 
   return new Promise((resolve, reject) => {
     const img = new Image();
+    const handleAbort = () => {
+      img.src = '';
+      reject(new DOMException('Aborted', 'AbortError'));
+    };
+    if (signal) {
+      if (signal.aborted) return handleAbort();
+      signal.addEventListener('abort', handleAbort);
+    }
     img.src = url;
-    img.onload = () => resolve(img);
-    img.onerror = reject;
+    img.onload = () => {
+      if (signal) signal.removeEventListener('abort', handleAbort);
+      resolve(img);
+    };
+    img.onerror = (err) => {
+      if (signal) signal.removeEventListener('abort', handleAbort);
+      reject(err);
+    };
   });
 }
 
@@ -44,6 +58,8 @@ export function HelmetVideoScroller() {
   const targetFrameRef = useRef<number>(0);
   const lastRenderedFrameRef = useRef<number>(-1);
   const rafId = useRef<number | null>(null);
+  const idleCallbackRef = useRef<number | null>(null);
+  const timeoutRef = useRef<number | null>(null);
 
   // Cache em memória de alta performance com ImageBitmaps decodificados
   const imageCache = useRef<Map<number, ImageBitmap | HTMLImageElement>>(new Map());
@@ -150,8 +166,10 @@ export function HelmetVideoScroller() {
       if (frameToRender !== lastRenderedFrameRef.current) {
         renderFrame(frameToRender);
       }
+      rafId.current = requestAnimationFrame(updateLoop);
+    } else {
+      rafId.current = null;
     }
-    rafId.current = requestAnimationFrame(updateLoop);
   }, [renderFrame]);
 
   useEffect(() => {
@@ -188,6 +206,34 @@ export function HelmetVideoScroller() {
       let pos = 0;
       while (pos < arr.length && arr[pos] < idx) pos++;
       arr.splice(pos, 0, idx);
+
+      // LRU Eviction: max 50 frames
+      if (imageCache.current.size > 50) {
+        const target = targetFrameRef.current;
+        let furthestIdx = -1;
+        let maxDist = -1;
+        
+        for (const key of imageCache.current.keys()) {
+          const dist = Math.abs(key - target);
+          if (dist > maxDist) {
+            maxDist = dist;
+            furthestIdx = key;
+          }
+        }
+        
+        if (furthestIdx !== -1) {
+          const item = imageCache.current.get(furthestIdx);
+          if (item && 'close' in item && typeof (item as any).close === 'function') {
+            (item as any).close();
+          }
+          imageCache.current.delete(furthestIdx);
+          
+          const idxInArr = loadedIndices.current.indexOf(furthestIdx);
+          if (idxInArr > -1) {
+            loadedIndices.current.splice(idxInArr, 1);
+          }
+        }
+      }
     };
 
     // 3. Pré-carregamento Progressivo em 2 Fases (Smart Progressive Loading)
@@ -244,16 +290,16 @@ export function HelmetVideoScroller() {
           );
 
           if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-            (window as any).requestIdleCallback(() => processRemaining(startIndex + 6), { timeout: 200 });
+            idleCallbackRef.current = (window as any).requestIdleCallback(() => processRemaining(startIndex + 6), { timeout: 200 });
           } else {
-            setTimeout(() => processRemaining(startIndex + 6), 25);
+            timeoutRef.current = setTimeout(() => processRemaining(startIndex + 6), 25) as unknown as number;
           }
         };
 
         if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-          (window as any).requestIdleCallback(() => processRemaining(0), { timeout: 500 });
+          idleCallbackRef.current = (window as any).requestIdleCallback(() => processRemaining(0), { timeout: 500 });
         } else {
-          setTimeout(() => processRemaining(0), 100);
+          timeoutRef.current = setTimeout(() => processRemaining(0), 100) as unknown as number;
         }
       } catch (err) {
         // Pipeline cancelado ou erro silencioso
@@ -281,6 +327,9 @@ export function HelmetVideoScroller() {
         onUpdate: (self) => {
           // Desacoplamento estrito: apenas atualiza o número do target frame
           targetFrameRef.current = self.progress * (TOTAL_FRAMES - 1);
+          if (rafId.current === null) {
+            rafId.current = requestAnimationFrame(updateLoop);
+          }
         }
       });
 
@@ -312,11 +361,18 @@ export function HelmetVideoScroller() {
       if (rafId.current !== null) {
         cancelAnimationFrame(rafId.current);
       }
+      
+      if (idleCallbackRef.current !== null && typeof window !== 'undefined' && 'cancelIdleCallback' in window) {
+        (window as any).cancelIdleCallback(idleCallbackRef.current);
+      }
+      if (timeoutRef.current !== null) {
+        clearTimeout(timeoutRef.current);
+      }
 
       // Libera explicitamente memória da GPU fechando todos os ImageBitmaps
       imageCache.current.forEach((item) => {
-        if (item && 'close' in item && typeof item.close === 'function') {
-          item.close();
+        if (item && 'close' in item && typeof (item as any).close === 'function') {
+          (item as any).close();
         }
       });
       imageCache.current.clear();

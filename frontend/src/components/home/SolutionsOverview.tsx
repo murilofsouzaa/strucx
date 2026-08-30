@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -10,7 +10,7 @@ gsap.registerPlugin(ScrollTrigger);
 export function SolutionsOverview() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
-  const [scrollProgress, setScrollProgress] = useState<number>(0);
+  const progressBarRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -37,7 +37,11 @@ export function SolutionsOverview() {
           scrub: 0.85,
           anticipatePin: 1,
           invalidateOnRefresh: true,
-          onUpdate: (self) => setScrollProgress(self.progress),
+          onUpdate: (self) => {
+            if (progressBarRef.current) {
+              progressBarRef.current.style.width = `${Math.max(5, Math.min(100, self.progress * 100))}%`;
+            }
+          },
         }
       });
 
@@ -69,7 +73,11 @@ export function SolutionsOverview() {
           scrub: 0.5, // Resposta mais ágil e natural ao toque no celular
           anticipatePin: 1,
           invalidateOnRefresh: true,
-          onUpdate: (self) => setScrollProgress(self.progress),
+          onUpdate: (self) => {
+            if (progressBarRef.current) {
+              progressBarRef.current.style.width = `${Math.max(5, Math.min(100, self.progress * 100))}%`;
+            }
+          },
         }
       });
 
@@ -220,8 +228,9 @@ export function SolutionsOverview() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-4 sm:mt-6">
         <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
           <div 
+            ref={progressBarRef}
             className="h-full bg-[#0284C7] transition-all duration-75 ease-out rounded-full"
-            style={{ width: `${Math.max(5, Math.min(100, scrollProgress * 100))}%` }}
+            style={{ width: '5%' }}
           />
         </div>
       </div>

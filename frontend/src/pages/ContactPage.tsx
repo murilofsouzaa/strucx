@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { 
   PaperPlaneTilt, 
@@ -26,10 +26,25 @@ export function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setErrorMessage(null);
+    
+    abortControllerRef.current = new AbortController();
 
     try {
       const response = await fetch('/api/contact', {
@@ -38,9 +53,12 @@ export function ContactPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
+        signal: abortControllerRef.current.signal,
       });
 
       const data = await response.json();
+      
+      if (!isMountedRef.current) return;
 
       if (!response.ok || !data.success) {
         throw new Error(data.error || 'Falha ao enviar mensagem. Tente novamente.');
@@ -62,9 +80,13 @@ export function ContactPage() {
         // Ignore if canvas-confetti is not loaded
       }
     } catch (err: any) {
+      if (!isMountedRef.current) return;
+      if (err.name === 'AbortError') return;
       setErrorMessage(err.message || 'Ocorreu um erro ao enviar sua mensagem. Verifique sua conexão.');
     } finally {
-      setIsLoading(false);
+      if (isMountedRef.current) {
+        setIsLoading(false);
+      }
     }
   };
 

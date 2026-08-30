@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { PROJECTS_DATA, type Project } from '../data/mockData';
 import { 
   X,
@@ -211,12 +212,12 @@ export function ProjectsPage() {
               <div className="text-xs font-body text-slate-500">
                 Quer especificações similares para sua obra?
               </div>
-              <a
-                href="/contato"
+              <Link
+                to="/contato"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-2.5 px-6 rounded-sm bg-[#0F172A] hover:bg-[#0284C7] text-white font-condensed text-xs uppercase tracking-wider font-bold transition-all shadow-xs cursor-pointer"
               >
                 <span>Solicitar Consulta Técnica</span>
-              </a>
+              </Link>
             </div>
           </div>
         </div>
