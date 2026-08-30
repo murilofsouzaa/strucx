@@ -10,7 +10,7 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   return (
-    <div className="min-h-[100dvh] flex flex-col bg-transparent text-[#0F172A] selection:bg-[#0284C7] selection:text-white">
+    <div className="min-h-[100dvh] flex flex-col bg-[#FAFAFC]/60 text-[#0F172A] selection:bg-[#0284C7] selection:text-white">
       <ScrollToTop />
       <Navbar />
       <main className="flex-1 w-full relative">

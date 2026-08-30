@@ -9,9 +9,9 @@ import {
 
 export function Footer() {
   return (
-    <footer className="bg-white/30 backdrop-blur-lg border-t border-slate-200/50 relative z-20 overflow-hidden text-slate-600">
+    <footer className="bg-slate-50/80 backdrop-blur-xl border-t border-slate-200/80 relative z-20 overflow-hidden text-slate-600 shadow-2xs">
       {/* Top Accent Line */}
-      <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-[#0284C7]/60 to-transparent" />
+      <div className="h-[1.5px] w-full bg-gradient-to-r from-transparent via-[#0284C7]/80 to-transparent" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 mb-16">
@@ -46,7 +46,7 @@ export function Footer() {
           {/* Quick Links (3 cols) */}
           <div className="lg:col-span-3">
             <span className="font-heading text-xs font-bold uppercase tracking-wider text-[#0F172A] block mb-4">
-              Disciplinas Estruturais
+              Serviços Estruturais
             </span>
             <ul className="space-y-2.5 text-xs font-condensed uppercase tracking-wider">
               <li>
@@ -157,7 +157,7 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-slate-200/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-body text-slate-500">
+        <div className="pt-8 border-t border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-body text-slate-500">
           <div className="flex items-center gap-2">
             <span>© {new Date().getFullYear()} StrucX Engenharia Estrutural S/A.</span>
             <span>·</span>
