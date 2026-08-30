@@ -25,6 +25,8 @@ export interface Project {
   highlight: string;
   description: string;
   image: string;
+  video?: string;
+  videoClips?: { title: string; src: string; duration: string }[];
   specs: {
     system: string;
     steelWeight: string;
@@ -197,6 +199,11 @@ export const PROJECTS_DATA: Project[] = [
     highlight: "Mastro único assimétrico em formato de diamante com 145 metros de altura e 48 pares de estais.",
     description: "Desafio de engenharia marítima em solo marinho compressível. Desenvolvemos fundações com estacas escavadas com camisa metálica perdida de 2,4m de diâmetro e sistema de monitoramento dinâmico contínuo.",
     image: "https://images.unsplash.com/photo-1545558014-8692077e9b5c?q=80&w=1200&auto=format&fit=crop",
+    video: "/videos/video2.mp4",
+    videoClips: [
+      { title: "Simulação de Túnel de Vento CFD & Aerodinâmica", src: "/videos/video2.mp4", duration: "0:17" },
+      { title: "Detalhamento e Análise de Estais", src: "/videos/video1.mp4", duration: "0:14" }
+    ],
     specs: {
       system: "Mastro Diamante em Concreto + Tabuleiro Misto Aço-Concreto",
       steelWeight: "8.900 toneladas",

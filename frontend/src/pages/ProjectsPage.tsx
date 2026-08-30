@@ -5,7 +5,10 @@ import {
   MagnifyingGlass, 
   X,
   Leaf,
-  ShieldCheck
+  ShieldCheck,
+  Play,
+  FilmStrip,
+  Image as ImageIcon
 } from '@phosphor-icons/react';
 import { CtaSection } from '../components/home/CtaSection';
 
@@ -15,6 +18,8 @@ export function ProjectsPage() {
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('Todos');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [selectedClipIndex, setSelectedClipIndex] = useState<number>(0);
+  const [mediaMode, setMediaMode] = useState<'video' | 'image'>('video');
 
   const categories: CategoryFilter[] = ['Todos', 'Comercial', 'Infraestrutura', 'Industrial', 'Residencial', 'Retrofit'];
 
@@ -27,6 +32,12 @@ export function ProjectsPage() {
       p.specs.system.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  const handleOpenProject = (project: Project) => {
+    setSelectedProject(project);
+    setSelectedClipIndex(0);
+    setMediaMode(project.video ? 'video' : 'image');
+  };
 
   return (
     <div className="pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
@@ -43,16 +54,16 @@ export function ProjectsPage() {
       {/* Minimalist Filter Bar */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-2 bg-slate-50 border border-slate-200 rounded-sm mb-16">
         {/* Category Pills */}
-        <div className="flex flex-wrap gap-1.5 w-full md:w-auto">
+        <div className="flex flex-wrap items-center gap-1 w-full md:w-auto">
           {categories.map((cat) => (
             <button
               key={cat}
               type="button"
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-sm font-condensed text-xs uppercase tracking-wider font-semibold transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-sm font-condensed text-xs uppercase tracking-wider transition-all cursor-pointer ${
                 selectedCategory === cat
-                  ? 'bg-[#0F172A] text-white shadow-xs'
-                  : 'text-slate-600 hover:text-[#0F172A] hover:bg-slate-200/60'
+                  ? 'bg-[#0F172A] text-white font-bold shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 font-semibold'
               }`}
             >
               {cat}
@@ -60,7 +71,7 @@ export function ProjectsPage() {
           ))}
         </div>
 
-        {/* Search Bar */}
+        {/* Search Input */}
         <div className="relative w-full md:w-72">
           <MagnifyingGlass size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
@@ -79,10 +90,10 @@ export function ProjectsPage() {
           <div
             key={project.id}
             id={project.slug}
-            onClick={() => setSelectedProject(project)}
+            onClick={() => handleOpenProject(project)}
             className="group cursor-pointer flex flex-col space-y-4"
           >
-            {/* Pristine Large Image Container (Zero Badges/Overlays) */}
+            {/* Pristine Large Image Container */}
             <div className="relative aspect-[4/3] w-full overflow-hidden rounded-sm bg-slate-100 border border-slate-200 shadow-2xs">
               <img
                 src={project.image}
@@ -90,6 +101,14 @@ export function ProjectsPage() {
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 loading="lazy"
               />
+
+              {/* Video Badge Indicator */}
+              {project.video && (
+                <div className="absolute top-3 left-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-slate-900/80 backdrop-blur-md border border-white/20 text-white font-condensed text-[10px] uppercase tracking-wider font-bold shadow-sm">
+                  <Play size={10} weight="fill" className="text-[#38BDF8]" />
+                  <span>Vídeo Clipes Disponíveis</span>
+                </div>
+              )}
             </div>
 
             {/* Editorial Typography Below Image */}
@@ -113,13 +132,13 @@ export function ProjectsPage() {
         </div>
       )}
 
-      {/* Clean Project Detail Modal */}
+      {/* Clean Project Detail Modal with Video Clip Player */}
       {selectedProject && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
           <div className="bg-white border border-slate-200 rounded-sm max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-10 relative shadow-2xl">
             <button
               onClick={() => setSelectedProject(null)}
-              className="absolute top-5 right-5 p-2 rounded-sm bg-slate-100 text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-colors cursor-pointer"
+              className="absolute top-5 right-5 p-2 rounded-sm bg-slate-100 text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-colors cursor-pointer z-20"
               aria-label="Fechar"
             >
               <X size={20} weight="bold" />
@@ -137,13 +156,77 @@ export function ProjectsPage() {
               {selectedProject.client} · {selectedProject.location} · {selectedProject.year} · {selectedProject.area}
             </div>
 
-            <div className="relative aspect-[16/9] rounded-sm overflow-hidden mb-6 border border-slate-200 bg-slate-100">
-              <img
-                src={selectedProject.image}
-                alt={selectedProject.title}
-                className="w-full h-full object-cover"
-              />
+            {/* Interactive Video / Photo Preview Container */}
+            <div className="relative aspect-[16/9] rounded-sm overflow-hidden mb-4 border border-slate-200 bg-slate-900 shadow-inner">
+              {mediaMode === 'video' && (selectedProject.videoClips || selectedProject.video) ? (
+                <video
+                  key={selectedProject.videoClips ? selectedProject.videoClips[selectedClipIndex]?.src : selectedProject.video}
+                  autoPlay
+                  controls
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover"
+                >
+                  <source 
+                    src={selectedProject.videoClips ? selectedProject.videoClips[selectedClipIndex]?.src : selectedProject.video} 
+                    type="video/mp4" 
+                  />
+                  Seu navegador não suporta reprodução de vídeo.
+                </video>
+              ) : (
+                <img
+                  src={selectedProject.image}
+                  alt={selectedProject.title}
+                  className="w-full h-full object-cover"
+                />
+              )}
             </div>
+
+            {/* Media Selector Tabs (Se houver vídeo) */}
+            {selectedProject.videoClips && (
+              <div className="mb-6 p-2 bg-slate-50 border border-slate-200 rounded-sm">
+                <span className="text-[10px] font-condensed uppercase tracking-wider text-slate-400 font-bold block mb-2 px-1">
+                  Selecione o Clipe de Simulação ou Foto:
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {selectedProject.videoClips.map((clip, idx) => {
+                    const isCurrent = mediaMode === 'video' && selectedClipIndex === idx;
+                    return (
+                      <button
+                        key={clip.title}
+                        type="button"
+                        onClick={() => {
+                          setSelectedClipIndex(idx);
+                          setMediaMode('video');
+                        }}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm font-condensed text-xs uppercase tracking-wider transition-all cursor-pointer ${
+                          isCurrent
+                            ? 'bg-[#0284C7] text-white font-bold shadow-xs'
+                            : 'bg-white text-slate-700 border border-slate-200 hover:border-[#0284C7]'
+                        }`}
+                      >
+                        <FilmStrip size={13} weight="bold" />
+                        <span>{clip.title} ({clip.duration})</span>
+                      </button>
+                    );
+                  })}
+
+                  <button
+                    type="button"
+                    onClick={() => setMediaMode('image')}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm font-condensed text-xs uppercase tracking-wider transition-all cursor-pointer ${
+                      mediaMode === 'image'
+                        ? 'bg-[#0F172A] text-white font-bold shadow-xs'
+                        : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-400'
+                    }`}
+                  >
+                    <ImageIcon size={13} weight="bold" />
+                    <span>Fotografia</span>
+                  </button>
+                </div>
+              </div>
+            )}
 
             <p className="font-body text-sm text-slate-600 leading-relaxed mb-6">
               {selectedProject.description}
@@ -179,30 +262,35 @@ export function ProjectsPage() {
               </div>
             </div>
 
-            {/* Highlights */}
+            {/* Key Engineering Features */}
             <h4 className="text-xs font-condensed uppercase tracking-widest text-slate-800 font-bold mb-3">
-              Destaques de Engenharia
+              Destaques de Engenharia & Inovações
             </h4>
-            <div className="space-y-2 mb-8">
-              {selectedProject.features.map((feat) => (
-                <div key={feat} className="flex items-start gap-2 text-xs font-body text-slate-700">
-                  <span className="text-[#0284C7] font-bold">—</span>
+            <ul className="space-y-2 mb-6">
+              {selectedProject.features.map((feat, idx) => (
+                <li key={idx} className="flex items-center gap-2 text-xs font-body text-slate-600">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#0284C7] shrink-0" />
                   <span>{feat}</span>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
 
-            <button
-              type="button"
-              onClick={() => setSelectedProject(null)}
-              className="w-full py-3 rounded-sm bg-slate-100 hover:bg-slate-200 text-slate-800 font-condensed text-xs uppercase tracking-wider font-bold transition-colors border border-slate-200 cursor-pointer"
-            >
-              Fechar Detalhes
-            </button>
+            <div className="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-xs font-body text-slate-500">
+                Quer especificações similares para sua obra?
+              </div>
+              <a
+                href="/contato"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-2.5 px-6 rounded-sm bg-[#0F172A] hover:bg-[#0284C7] text-white font-condensed text-xs uppercase tracking-wider font-bold transition-all shadow-xs cursor-pointer"
+              >
+                <span>Solicitar Consulta Técnica</span>
+              </a>
+            </div>
           </div>
         </div>
       )}
 
+      {/* Bottom CTA */}
       <CtaSection />
     </div>
   );
