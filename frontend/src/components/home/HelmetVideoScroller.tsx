@@ -151,6 +151,8 @@ export function HelmetVideoScroller() {
         className="w-full h-full block bg-transparent"
         style={{ width: '100vw', height: '100vh' }}
       />
+      {/* Camada Esbranquiçada de Alto Contraste para Tipografia e Elementos da Interface */}
+      <div className="absolute inset-0 bg-white/45 pointer-events-none" />
     </div>
   );
 }
