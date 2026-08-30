@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SOLUTIONS_DATA } from '../data/mockData';
 import { 
@@ -22,17 +21,11 @@ const ICONS_MAP: Record<string, any> = {
 };
 
 export function SolutionsPage() {
-  const [activeFilter, setActiveFilter] = useState<string>('all');
-
-  const filteredSolutions = activeFilter === 'all'
-    ? SOLUTIONS_DATA
-    : SOLUTIONS_DATA.filter((s) => s.id === activeFilter);
-
   return (
     <div className="pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
       
       {/* Header Direto e Elegante */}
-      <div className="text-center max-w-3xl mx-auto mb-14">
+      <div className="text-center max-w-3xl mx-auto mb-16">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-sky-50 border border-sky-200 text-xs font-condensed uppercase tracking-wider text-[#0284C7] mb-3 font-bold">
           <Sparkle size={14} weight="fill" />
           <span>Disciplinas & Engenharia de Precisão</span>
@@ -45,42 +38,9 @@ export function SolutionsPage() {
         </p>
       </div>
 
-      {/* Quick Filter Pills */}
-      <div className="flex flex-wrap items-center justify-center gap-2 mb-12">
-        <button
-          type="button"
-          onClick={() => setActiveFilter('all')}
-          className={`px-4 py-2 rounded-sm font-condensed text-xs uppercase tracking-wider transition-all cursor-pointer ${
-            activeFilter === 'all'
-              ? 'bg-[#0F172A] text-white font-bold shadow-xs'
-              : 'bg-white text-slate-600 border border-slate-200 hover:border-slate-300 hover:text-slate-900 font-semibold'
-          }`}
-        >
-          Todos os Serviços ({SOLUTIONS_DATA.length})
-        </button>
-
-        {SOLUTIONS_DATA.map((sol) => {
-          const isActive = activeFilter === sol.id;
-          return (
-            <button
-              key={sol.id}
-              type="button"
-              onClick={() => setActiveFilter(sol.id)}
-              className={`px-4 py-2 rounded-sm font-condensed text-xs uppercase tracking-wider transition-all cursor-pointer ${
-                isActive
-                  ? 'bg-[#0284C7] text-white font-bold shadow-xs'
-                  : 'bg-white text-slate-600 border border-slate-200 hover:border-slate-300 hover:text-slate-900 font-semibold'
-              }`}
-            >
-              {sol.title.split(' ')[0]} {sol.title.split(' ')[1] || ''}
-            </button>
-          );
-        })}
-      </div>
-
       {/* Grid de Soluções Direto e Intuitivo */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-20">
-        {filteredSolutions.map((sol) => {
+        {SOLUTIONS_DATA.map((sol) => {
           const IconComponent = ICONS_MAP[sol.iconName] || Buildings;
 
           return (
