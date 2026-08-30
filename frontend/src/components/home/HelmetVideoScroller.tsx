@@ -6,18 +6,19 @@ gsap.registerPlugin(ScrollTrigger);
 
 const TOTAL_FRAMES = 1155;
 
+function getFramePath(index: number): string {
+  const padIndex = String(index + 1).padStart(4, '0');
+  return `/frames/frame_${padIndex}.webp`;
+}
+
 export function HelmetVideoScroller() {
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const imagesRef = useRef<HTMLImageElement[]>([]);
   const currentFrameRef = useRef<number>(0);
   const targetFrameRef = useRef<number>(0);
   const lastRenderedFrameRef = useRef<number>(-1);
   const rafId = useRef<number | null>(null);
-
-  const getFramePath = (index: number) => {
-    const frameNumber = (index + 1).toString().padStart(4, '0');
-    return `/frames/frame_${frameNumber}.webp`;
-  };
 
   // Renderiza instantaneamente o frame no Canvas com alta performance
   const renderFrame = useCallback((frameIndex: number) => {
@@ -66,7 +67,6 @@ export function HelmetVideoScroller() {
   const updateLoop = useCallback(() => {
     const diff = targetFrameRef.current - currentFrameRef.current;
     if (Math.abs(diff) > 0.0001) {
-      // 0.065 mantém inércia elástica e fluidez contínua no espaço de 250vh
       currentFrameRef.current += diff * 0.065;
       const frameToRender = Math.min(
         TOTAL_FRAMES - 1,
@@ -120,32 +120,49 @@ export function HelmetVideoScroller() {
     handleResize();
     window.addEventListener('resize', handleResize, { passive: true });
 
-    // 3. GSAP ScrollTrigger sincronizado para durar por todo o trajeto até a seção de vídeo
-    const trigger = ScrollTrigger.create({
-      trigger: document.documentElement,
-      start: 'top top',
-      end: () => {
-        const videoEl = document.getElementById('cinematic-video-section');
-        if (videoEl) {
-          const rect = videoEl.getBoundingClientRect();
-          const scrollTop = window.scrollY || document.documentElement.scrollTop;
-          return `+=${Math.max(window.innerHeight * 3, rect.top + scrollTop)}`;
+    const ctx = gsap.context(() => {
+      // 3. GSAP ScrollTrigger sincronizado para durar por todo o trajeto até a seção de vídeo
+      ScrollTrigger.create({
+        trigger: document.documentElement,
+        start: 'top top',
+        end: () => {
+          const videoEl = document.getElementById('cinematic-video-section');
+          if (videoEl) {
+            const rect = videoEl.getBoundingClientRect();
+            const scrollTop = window.scrollY || document.documentElement.scrollTop;
+            return `+=${Math.max(window.innerHeight * 3, rect.top + scrollTop)}`;
+          }
+          return `+=${window.innerHeight * 4.5}`;
+        },
+        scrub: 1.0,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          targetFrameRef.current = self.progress * (TOTAL_FRAMES - 1);
         }
-        return `+=${window.innerHeight * 4.5}`;
-      },
-      scrub: 1.0,
-      invalidateOnRefresh: true,
-      onUpdate: (self) => {
-        targetFrameRef.current = self.progress * (TOTAL_FRAMES - 1);
+      });
+
+      // 4. Fade out suave do capacete para branco puro ao passar pela seção de vídeo
+      if (wrapperRef.current) {
+        gsap.to(wrapperRef.current, {
+          opacity: 0,
+          ease: 'power1.out',
+          scrollTrigger: {
+            trigger: '#cinematic-video-section',
+            start: 'top 50%',
+            end: 'bottom top',
+            scrub: true,
+            invalidateOnRefresh: true,
+          }
+        });
       }
     });
 
-    // 4. Inicia o loop de animação contínua
+    // 5. Inicia o loop de animação contínua
     rafId.current = requestAnimationFrame(updateLoop);
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      trigger.kill();
+      ctx.revert();
       if (rafId.current !== null) {
         cancelAnimationFrame(rafId.current);
       }
@@ -153,7 +170,10 @@ export function HelmetVideoScroller() {
   }, [renderFrame, updateLoop]);
 
   return (
-    <div className="fixed inset-0 w-full h-full pointer-events-none -z-10 overflow-hidden bg-white">
+    <div 
+      ref={wrapperRef}
+      className="fixed inset-0 w-full h-full pointer-events-none -z-10 overflow-hidden bg-white transition-opacity duration-300"
+    >
       {/* Canvas 2D de Alta Performance */}
       <canvas
         ref={canvasRef}

@@ -11,11 +11,17 @@ export function HomePage() {
       <HelmetVideoScroller />
 
       {/* Clean, Spacious Editorial Content Flow */}
-      <div className="relative z-10 space-y-16 sm:space-y-24">
-        <HeroSection />
-        <SolutionsOverview />
-        <CinematicVideoSection />
-        <CtaSection />
+      <div className="relative z-10">
+        <div className="space-y-16 sm:space-y-24">
+          <HeroSection />
+          <SolutionsOverview />
+          <CinematicVideoSection />
+        </div>
+
+        {/* Seção Pós-Vídeo com Fundo 100% Branco Sólido (Cobre o capacete completamente) */}
+        <div className="w-full bg-white relative z-20 border-t border-slate-100 py-6 sm:py-10">
+          <CtaSection />
+        </div>
       </div>
     </div>
   );
