@@ -36,14 +36,14 @@ export function getAdminNotificationHtml(data: ContactEmailPayload): string {
 <body>
   <div class="container">
     <div class="header">
-      <div class="brand">STRUC<span>X</span></div>
-      <div class="tagline">Notificação de Nova Mensagem / Lead Estrutural</div>
+      <div class="brand">MURILO SOUZA · <span>WEB DEV</span></div>
+      <div class="tagline">Novo Pedido de Orçamento de Site / Projeto Web</div>
     </div>
     <div class="content">
-      <h2 class="title">📩 Novo Contato Recebido pelo Site</h2>
+      <h2 class="title">Novo Contato para Criação de Site</h2>
       <table class="info-table">
         <tr>
-          <td class="label">Nome:</td>
+          <td class="label">Cliente / Nome:</td>
           <td class="value"><strong>${data.name}</strong></td>
         </tr>
         <tr>
@@ -52,13 +52,8 @@ export function getAdminNotificationHtml(data: ContactEmailPayload): string {
         </tr>
         ${data.phone ? `
         <tr>
-          <td class="label">WhatsApp / Tel:</td>
+          <td class="label">WhatsApp:</td>
           <td class="value"><a href="https://wa.me/${data.phone.replace(/\D/g, '')}" style="color: #25D366; text-decoration: none;">${data.phone}</a></td>
-        </tr>` : ''}
-        ${data.service ? `
-        <tr>
-          <td class="label">Serviço de Interesse:</td>
-          <td class="value"><span style="background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">${data.service}</span></td>
         </tr>` : ''}
         <tr>
           <td class="label">Data/Hora:</td>
@@ -66,11 +61,11 @@ export function getAdminNotificationHtml(data: ContactEmailPayload): string {
         </tr>
       </table>
 
-      <div style="font-weight: 600; font-size: 12px; text-transform: uppercase; color: #64748b; margin-top: 16px;">Mensagem Enviada:</div>
+      <div style="font-weight: 600; font-size: 12px; text-transform: uppercase; color: #64748b; margin-top: 16px;">Sobre o Site / Demanda:</div>
       <div class="message-box">${data.message}</div>
     </div>
     <div class="footer">
-      StrucX Systems · Backend de Telemetria e Mensagens · <a href="https://strucx.com.br" style="color: #0284c7; text-decoration: none;">strucx.com.br</a>
+      Murilo Souza · Desenvolvimento Web & Interfaces de Alta Performance · <a href="mailto:onemurilo@gmail.com" style="color: #0284c7; text-decoration: none;">onemurilo@gmail.com</a>
     </div>
   </div>
 </body>
@@ -102,26 +97,26 @@ export function getClientConfirmationHtml(data: ContactEmailPayload): string {
 <body>
   <div class="container">
     <div class="header">
-      <div class="brand">STRUC<span>X</span></div>
-      <div style="font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">Engenharia Estrutural de Alta Performance</div>
+      <div class="brand">MURILO SOUZA · <span>WEB DEV</span></div>
+      <div style="font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">Desenvolvimento Web & Criação de Sites</div>
     </div>
     <div class="content">
       <h2 class="title">Olá, ${data.name}!</h2>
       <p class="paragraph">
-        Confirmamos o recebimento da sua mensagem sobre projetos estruturais. Nossa equipe de engenharia e modelagem computacional já está revisando as especificações enviadas.
+        Confirmamos o recebimento da sua mensagem para criação de site e projetos digitais.
       </p>
       <p class="paragraph">
-        Entraremos em contato no endereço <strong>${data.email}</strong> em até 24 horas úteis.
+        Estou revisando as especificações enviadas e entrarei em contato no endereço <strong>${data.email}</strong> com a proposta técnica e de prazos em até 24 horas úteis.
       </p>
 
       <div class="cta-box">
-        <div class="cta-title">Necessita de alinhamento imediato?</div>
-        <p style="font-size: 12px; color: #0284c7; margin: 0 0 10px 0;">Você também pode falar diretamente com o engenheiro responsável pelo WhatsApp.</p>
-        <a href="https://wa.me/5533999026628" class="btn-wa">Abrir Conversa no WhatsApp</a>
+        <div class="cta-title">Quer conversar agora mesmo?</div>
+        <p style="font-size: 12px; color: #0284c7; margin: 0 0 10px 0;">Você também pode falar diretamente pelo WhatsApp para alinharmos ideias rapidamente.</p>
+        <a href="https://wa.me/5533999026628?text=Ol%C3%A1!%20Enviei%20uma%20mensagem%20no%20site%20e%20gostaria%20de%20conversar%20sobre%20um%20projeto." class="btn-wa">Abrir Conversa no WhatsApp</a>
       </div>
     </div>
     <div class="footer">
-      © ${new Date().getFullYear()} StrucX Engenharia Estrutural S/A · Todos os direitos reservados.
+      Murilo Souza · Frontend Engineer & Web Development · Todos os direitos reservados.
     </div>
   </div>
 </body>

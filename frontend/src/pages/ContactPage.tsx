@@ -7,7 +7,7 @@ import {
   GithubLogo, 
   CheckCircle,
   ArrowRight,
-  ChatCircleDots,
+  Code,
   Clock,
   CircleNotch,
   WarningCircle
@@ -18,7 +18,6 @@ export function ContactPage() {
     name: '',
     email: '',
     phone: '',
-    service: '',
     message: ''
   });
 
@@ -74,15 +73,15 @@ export function ContactPage() {
       
       {/* Header */}
       <div className="text-center max-w-2xl mx-auto mb-16">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-sky-50 border border-sky-200 text-xs font-condensed uppercase tracking-wider text-[#0284C7] mb-4 font-semibold">
-          <ChatCircleDots size={14} weight="bold" />
-          <span>Contato & Novos Projetos</span>
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-sm bg-sky-50 border border-sky-200 text-xs font-condensed uppercase tracking-wider text-[#0284C7] mb-4 font-bold">
+          <Code size={16} weight="bold" />
+          <span>Criação de Sites & Desenvolvimento Web</span>
         </div>
         <h1 className="font-heading text-4xl sm:text-5xl font-bold text-[#0F172A] tracking-tight mb-4 leading-tight">
-          Vamos construir algo extraordinário juntos.
+          Vamos construir sua presença digital e sites de alta performance.
         </h1>
         <p className="font-body text-sm sm:text-base text-slate-600 leading-relaxed">
-          Tem uma ideia de projeto, precisa de uma consultoria ou quer desenvolver uma experiência web de alto impacto e performance? Envie uma mensagem ou inicie uma conversa direta.
+          Precisa criar um site moderno, landing page de alta conversão, portfólio interativo ou aplicação web sob medida? Envie sua mensagem ou inicie uma conversa direta.
         </p>
       </div>
 
@@ -97,11 +96,11 @@ export function ContactPage() {
               Conversa Imediata
             </h3>
             <p className="font-body text-xs text-slate-600 leading-relaxed">
-              Prefere um contato mais ágil e direto para discutir ideias e prazos? Fale diretamente pelo WhatsApp.
+              Quer tirar dúvidas sobre prazos, valores ou tecnologias para o seu novo site? Fale diretamente pelo WhatsApp.
             </p>
 
             <a
-              href="https://wa.me/5533999026628?text=Ol%C3%A1!%20Gostaria%20de%20conversar%20sobre%20um%20projeto%20estrutural."
+              href="https://wa.me/5533999026628?text=Ol%C3%A1!%20Gostaria%20de%20um%20or%C3%A7amento%20para%20cria%C3%A7%C3%A3o%20de%20um%20site."
               target="_blank"
               rel="noopener noreferrer"
               className="w-full flex items-center justify-center gap-2.5 py-3 px-4 rounded-sm bg-[#25D366] hover:bg-[#20bd5a] text-white font-condensed text-xs uppercase tracking-wider font-bold transition-all shadow-md shadow-[#25D366]/20 hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
@@ -115,7 +114,7 @@ export function ContactPage() {
           {/* Social Links & Direct Channels */}
           <div className="bg-white p-6 sm:p-7 rounded-sm border border-slate-200 shadow-xs space-y-4">
             <h3 className="font-heading text-lg font-bold text-[#0F172A]">
-              Conexões & Redes
+              Conexões & Portfólio
             </h3>
 
             <div className="space-y-2.5 text-xs font-body">
@@ -159,7 +158,7 @@ export function ContactPage() {
 
             <div className="pt-2 flex items-center gap-2 text-[11px] font-condensed uppercase tracking-wider text-slate-500 font-semibold">
               <Clock size={15} className="text-emerald-600" />
-              <span>Resposta em até 24 horas úteis</span>
+              <span>Resposta rápida em até 24 horas úteis</span>
             </div>
           </div>
 
@@ -180,7 +179,7 @@ export function ContactPage() {
                     Mensagem Enviada com Sucesso!
                   </h3>
                   <p className="font-body text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                    Obrigado pelo contato. Um e-mail de confirmação foi disparado para <strong>{formData.email}</strong> e responderemos sua solicitação o mais breve possível.
+                    Obrigado pelo contato! Um e-mail de confirmação foi enviado para <strong>{formData.email}</strong> e responderei sua solicitação sobre o site em breve.
                   </p>
 
                   {previewUrl && (
@@ -203,7 +202,7 @@ export function ContactPage() {
                   onClick={() => {
                     setSubmitted(false);
                     setPreviewUrl(null);
-                    setFormData({ name: '', email: '', phone: '', service: '', message: '' });
+                    setFormData({ name: '', email: '', phone: '', message: '' });
                   }}
                   className="px-6 py-2.5 rounded-sm bg-slate-100 text-slate-800 hover:bg-slate-200 font-condensed text-xs uppercase tracking-wider font-bold border border-slate-200 cursor-pointer"
                 >
@@ -214,10 +213,10 @@ export function ContactPage() {
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="pb-4 border-b border-slate-200">
                   <h3 className="font-heading text-xl font-bold text-[#0F172A]">
-                    Envie uma Mensagem
+                    Solicitar Orçamento / Novo Site
                   </h3>
                   <p className="text-xs text-slate-500 font-body mt-1">
-                    Preencha os campos abaixo com as especificações da sua demanda.
+                    Preencha os campos abaixo com as informações do site ou projeto que você deseja criar.
                   </p>
                 </div>
 
@@ -228,22 +227,22 @@ export function ContactPage() {
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Name */}
-                  <div>
-                    <label className="text-xs font-condensed uppercase tracking-wider text-slate-700 block mb-1 font-bold">
-                      Seu Nome *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="Como prefere ser chamado?"
-                      className="w-full bg-white border border-slate-300 rounded-sm px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0284C7]"
-                    />
-                  </div>
+                {/* Name */}
+                <div>
+                  <label className="text-xs font-condensed uppercase tracking-wider text-slate-700 block mb-1 font-bold">
+                    Seu Nome *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="Como prefere ser chamado?"
+                    className="w-full bg-white border border-slate-300 rounded-sm px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0284C7]"
+                  />
+                </div>
 
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Email */}
                   <div>
                     <label className="text-xs font-condensed uppercase tracking-wider text-slate-700 block mb-1 font-bold">
@@ -258,9 +257,7 @@ export function ContactPage() {
                       className="w-full bg-white border border-slate-300 rounded-sm px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0284C7]"
                     />
                   </div>
-                </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Phone / WhatsApp */}
                   <div>
                     <label className="text-xs font-condensed uppercase tracking-wider text-slate-700 block mb-1 font-bold">
@@ -274,39 +271,19 @@ export function ContactPage() {
                       className="w-full bg-white border border-slate-300 rounded-sm px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0284C7]"
                     />
                   </div>
-
-                  {/* Service of Interest */}
-                  <div>
-                    <label className="text-xs font-condensed uppercase tracking-wider text-slate-700 block mb-1 font-bold">
-                      Serviço de Interesse
-                    </label>
-                    <select
-                      value={formData.service}
-                      onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                      className="w-full bg-white border border-slate-300 rounded-sm px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-[#0284C7]"
-                    >
-                      <option value="">Selecione um serviço...</option>
-                      <option value="Cálculo Estrutural Avançado">Cálculo Estrutural Avançado</option>
-                      <option value="Engenharia BIM 5D & Coordenação">Engenharia BIM 5D & Coordenação</option>
-                      <option value="Retrofit & Reforço Estrutural">Retrofit & Reforço Estrutural</option>
-                      <option value="Geotecnia & Fundações Profundas">Geotecnia & Fundações Profundas</option>
-                      <option value="Monitoramento SHM (IoT)">Monitoramento SHM (IoT)</option>
-                      <option value="Outro / Consultoria Especial">Outro / Consultoria Especial</option>
-                    </select>
-                  </div>
                 </div>
 
                 {/* Message */}
                 <div>
                   <label className="text-xs font-condensed uppercase tracking-wider text-slate-700 block mb-1 font-bold">
-                    Mensagem / Escopo do Projeto *
+                    Sobre o Site / Funcionalidades Desejadas *
                   </label>
                   <textarea
                     rows={5}
                     required
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    placeholder="Conte um pouco sobre sua obra, prazos estimados, área construída ou desafios de engenharia..."
+                    placeholder="Conte um pouco sobre sua ideia, o tipo de site que deseja criar (institucional, landing page, sistema), referências visuais ou prazos estimados..."
                     className="w-full bg-white border border-slate-300 rounded-sm p-3.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0284C7]"
                   />
                 </div>
@@ -325,7 +302,7 @@ export function ContactPage() {
                   ) : (
                     <>
                       <PaperPlaneTilt size={16} weight="bold" />
-                      <span>Enviar Mensagem para Engenharia</span>
+                      <span>Solicitar Orçamento de Site</span>
                     </>
                   )}
                 </button>
