@@ -70,7 +70,7 @@ export function SolutionsOverview() {
               Engenharia Estrutural de Ponta a Ponta
             </span>
             <h2 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold text-[#0F172A] tracking-tight leading-tight">
-              Disciplinas integradas para viabilizar geometrias audaciosas
+              Serviços prestados para viabilizar geometrias audaciosas
             </h2>
           </div>
 
@@ -84,7 +84,7 @@ export function SolutionsOverview() {
               to="/solucoes"
               className="inline-flex items-center gap-2 text-xs font-condensed uppercase tracking-wider font-bold text-[#0F172A] hover:text-[#0284C7] transition-colors group cursor-pointer"
             >
-              <span>VER TODAS</span>
+              <span>VER TODOS</span>
               <ArrowRight size={14} weight="bold" className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
@@ -117,7 +117,7 @@ export function SolutionsOverview() {
                 {/* Header ID */}
                 <div className="mb-3">
                   <span className="text-[10px] font-condensed uppercase tracking-widest text-[#0284C7] font-bold">
-                    DISCIPLINA #{sol.id.slice(-2)}
+                    SERVIÇO #{sol.id.slice(-2)}
                   </span>
                 </div>
 
