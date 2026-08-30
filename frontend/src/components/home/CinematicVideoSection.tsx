@@ -31,6 +31,7 @@ export function CinematicVideoSection() {
           loop
           muted
           playsInline
+          preload="metadata"
           className="absolute inset-0 w-full h-full object-cover scale-105 transform-gpu opacity-75"
         >
           <source src="/videos/ponte.mp4" type="video/mp4" />
