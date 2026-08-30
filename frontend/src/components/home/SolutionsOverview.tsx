@@ -24,34 +24,33 @@ export function SolutionsOverview() {
         return Math.max(0, trackWidth - windowWidth + 80);
       };
 
-      // Timeline do ScrollTrigger com buffer/timeout inicial de respiro para entrada ultra-suave
+      // Timeline do ScrollTrigger com entrada acolchoada e transição elástica
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
           start: 'center center',
-          end: () => `+=${Math.max(1800, getScrollAmount() * 1.6)}`,
+          end: () => `+=${Math.max(1600, getScrollAmount() * 1.5)}`,
           pin: true,
           pinSpacing: true,
-          scrub: 1.2,
+          scrub: 0.9,
           anticipatePin: 1,
           invalidateOnRefresh: true,
-          fastScrollEnd: true,
         }
       });
 
-      // 1. Timeout / Buffer de Entrada: A seção fixa no centro e fica parada para absorção do usuário
-      tl.to({}, { duration: 0.45 });
+      // 1. Buffer inicial generoso: Ao fixar no centro, permanece totalmente estável nos primeiros momentos
+      tl.to({}, { duration: 0.55 });
 
-      // 2. Translação Horizontal: Deslocamento gradual e orgânico com aceleração/desaceleração
+      // 2. Translação Horizontal: Deslocamento orgânico com aceleração e desaceleração gradual
       tl.to(track, {
         x: () => -getScrollAmount(),
-        duration: 2.4,
+        duration: 2.3,
         ease: 'power1.inOut',
         force3D: true,
       });
 
-      // 3. Buffer de Saída: Pausa no último card antes de retomar a rolagem vertical
-      tl.to({}, { duration: 0.35 });
+      // 3. Buffer de Saída: Pausa confortável no último card antes de liberar o scroll vertical
+      tl.to({}, { duration: 0.4 });
     }, section);
 
     return () => ctx.revert();
@@ -59,6 +58,7 @@ export function SolutionsOverview() {
 
   return (
     <section
+      id="servicos-section"
       ref={sectionRef}
       className="relative z-10 w-full flex flex-col justify-center overflow-hidden bg-white border-y border-slate-200/80 shadow-xs py-12 sm:py-16"
     >
@@ -179,7 +179,7 @@ export function SolutionsOverview() {
               to="/solucoes"
               className="inline-flex items-center justify-center gap-2 py-2 px-3.5 rounded-sm bg-[#0284C7] hover:bg-[#0369a1] text-white font-condensed text-xs uppercase tracking-wider font-bold transition-colors shadow-sm cursor-pointer mt-4"
             >
-              <span>Ver Soluções</span>
+              <span>Ver Serviços</span>
               <ArrowRight size={13} weight="bold" />
             </Link>
           </div>

@@ -4,10 +4,15 @@ import { ArrowRight, CaretDown } from '@phosphor-icons/react';
 
 export function HeroSection() {
   const scrollToNext = () => {
-    window.scrollTo({
-      top: window.innerHeight * 0.85,
-      behavior: 'smooth'
-    });
+    const el = document.getElementById('servicos-section');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+      window.scrollTo({
+        top: window.innerHeight,
+        behavior: 'smooth'
+      });
+    }
   };
 
   return (
