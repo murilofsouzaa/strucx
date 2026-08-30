@@ -29,13 +29,6 @@ export function SolutionsPage() {
             className="bg-white border border-slate-200 rounded-sm p-7 sm:p-8 flex flex-col justify-between hover:border-[#0284C7] hover:shadow-md transition-all group"
           >
             <div className="space-y-4">
-              {/* Top Bar: ID Tag */}
-              <div className="flex items-center justify-between pb-1 border-b border-slate-100">
-                <span className="text-[11px] font-condensed uppercase tracking-widest text-[#0284C7] font-bold">
-                  SERVIÇO #{sol.id.slice(-2)}
-                </span>
-              </div>
-
               {/* Title & Subtitle */}
               <div>
                 <h3 className="font-heading text-xl font-bold text-[#0F172A] group-hover:text-[#0284C7] transition-colors leading-tight mb-1.5">

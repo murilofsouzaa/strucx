@@ -172,7 +172,7 @@ export const PROJECTS_DATA: Project[] = [
     status: "Em Execução",
     highlight: "Fundações profundas em solo complexo com contenção perimetral e superestrutura em concreto protendido de 42 pavimentos.",
     description: "Edifício icônico corporativo com escavação massiva em solo argiloso e contenções especiais. Superestrutura com núcleo rígido em concreto fck 60 MPa e lajes nervuradas protendidas sem pilares internos com balanço de 18 metros.",
-    image: "/videos/contrucao-predio.png",
+    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1200&auto=format&fit=crop",
     video: "/videos/contrucao-barro-shopping.mp4",
     videoClips: [
       { title: "Terraplanagem, Escavação & Barro", src: "/videos/contrucao-barro-shopping.mp4", duration: "0:21" },
@@ -281,67 +281,6 @@ export const PROJECTS_DATA: Project[] = [
       "Atenuação acústica superior com lajes desacopladas",
       "Balanços arquitetônicos com deformação controlada a laser",
       "Fachada ventilada integrada à estrutura de suporte"
-    ]
-  },
-  {
-    id: "proj-5",
-    slug: "complexo-logistico-extrema",
-    title: "Complexo Logístico & Canteiro Integrado",
-    category: "Industrial",
-    client: "GLP Logística",
-    location: "Extrema, MG",
-    year: "2024",
-    area: "140.000 m²",
-    status: "Em Execução",
-    highlight: "Operação simultânea de guindastes pesados para montagem de estruturas pré-moldadas industriais.",
-    description: "Mega canteiro de obras com logística de içamento contínuo. Pré-fabricados de concreto de alta resistência para pisos industriais de grande capacidade e cobertura espacial metálica.",
-    image: "/videos/guindaste-thumbnail.png",
-    video: "/videos/pessoas_construindo.mp4",
-    videoClips: [
-      { title: "Içamento e Operação de Guindastes", src: "/videos/pessoas_construindo.mp4", duration: "0:36" },
-      { title: "Montagem da Superestrutura", src: "/videos/construcao-predio.mp4", duration: "0:14" }
-    ],
-    specs: {
-      system: "Pré-moldado de Concreto + Treliça Espacial Metálica",
-      steelWeight: "1.850 toneladas",
-      concreteVolume: "28.500 m³",
-      maxSpan: "36.0 m entre pilares",
-      co2Savings: "680 ton CO2 eq"
-    },
-    features: [
-      "Piso com capacidade de 10 ton/m² sem juntas serradas",
-      "Pé-direito livre de 14 metros otimizado para verticalização",
-      "Tempo total de montagem da estrutura reduzido em 35%"
-    ]
-  },
-  {
-    id: "proj-6",
-    slug: "retrofit-metropol",
-    title: "Retrofit & Ampliação Metropol",
-    category: "Retrofit",
-    client: "Secretaria de Obras Públicas",
-    location: "Rio de Janeiro, RJ",
-    year: "2023",
-    area: "26.500 m²",
-    status: "Concluído",
-    highlight: "Reforço de pilares e vigas com polímeros de fibra de carbono (CFRP) e macaqueamento controlado.",
-    description: "Intervenção estrutural em edifício histórico para modernização e aumento de capacidade de carga em 180%. Execução sem paralisação das atividades térreas e com monitoramento a laser.",
-    image: "/videos/contrucao-predio.png",
-    video: "/videos/construcao-predio.mp4",
-    videoClips: [
-      { title: "Detalhamento e Execução de Reforço", src: "/videos/construcao-predio.mp4", duration: "0:14" }
-    ],
-    specs: {
-      system: "Estrutura Mista Original + Reforço em Fibra de Carbono e Micropilares",
-      steelWeight: "520 toneladas",
-      concreteVolume: "4.100 m³",
-      maxSpan: "16.0 m (reforço de lajes)",
-      co2Savings: "860 ton CO2 eq"
-    },
-    features: [
-      "Preservação integral dos elementos arquitetônicos",
-      "Monitoramento por inclinômetros a laser durante escavações",
-      "Aumento substancial na capacidade portante da superestrutura"
     ]
   }
 ];

@@ -114,13 +114,6 @@ export function SolutionsOverview() {
               }}
             >
               <div>
-                {/* Header ID */}
-                <div className="mb-3">
-                  <span className="text-[10px] font-condensed uppercase tracking-widest text-[#0284C7] font-bold">
-                    SERVIÇO #{sol.id.slice(-2)}
-                  </span>
-                </div>
-
                 {/* Title */}
                 <h3 className="font-heading text-lg sm:text-xl font-bold text-[#0F172A] mb-1.5 group-hover:text-[#0284C7] transition-colors leading-tight">
                   {sol.title}
