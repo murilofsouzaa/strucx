@@ -120,12 +120,21 @@ export function HelmetVideoScroller() {
     handleResize();
     window.addEventListener('resize', handleResize, { passive: true });
 
-    // 3. GSAP ScrollTrigger configurado exatamente para 250vh de distância de scroll
+    // 3. GSAP ScrollTrigger sincronizado para durar por todo o trajeto até a seção de vídeo
     const trigger = ScrollTrigger.create({
       trigger: document.documentElement,
       start: 'top top',
-      end: () => `+=${window.innerHeight * 2.5}`, // Distância exata de 250vh
+      end: () => {
+        const videoEl = document.getElementById('cinematic-video-section');
+        if (videoEl) {
+          const rect = videoEl.getBoundingClientRect();
+          const scrollTop = window.scrollY || document.documentElement.scrollTop;
+          return `+=${Math.max(window.innerHeight * 3, rect.top + scrollTop)}`;
+        }
+        return `+=${window.innerHeight * 4.5}`;
+      },
       scrub: 1.0,
+      invalidateOnRefresh: true,
       onUpdate: (self) => {
         targetFrameRef.current = self.progress * (TOTAL_FRAMES - 1);
       }

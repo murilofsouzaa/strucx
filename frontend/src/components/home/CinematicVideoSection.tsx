@@ -9,6 +9,7 @@ export function CinematicVideoSection() {
 
   return (
     <section 
+      id="cinematic-video-section"
       ref={containerRef}
       className="relative w-full overflow-hidden bg-[#0F172A] text-white border-y border-slate-800 shadow-2xl"
     >
